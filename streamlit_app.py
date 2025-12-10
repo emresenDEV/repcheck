@@ -224,7 +224,7 @@ class FormAnalyzer:
                 color = (0, 255, 255)
             
             cv2.putText(img, message, (10, y_offset), 
-                       cv2.FONT_HERSHEY_SIMPLEX, 0.7, color, 2)
+                        cv2.FONT_HERSHEY_SIMPLEX, 0.7, color, 2)
             y_offset += 35
         
         # Convert back to RGB
@@ -390,7 +390,7 @@ with tab3:
     st.subheader("📊 Your Stats")
     
     st.metric("Total Images Analyzed", st.session_state.total_analyzed, 
-              help="Number of images you've analyzed in this session")
+                help="Number of images you've analyzed in this session")
     
     st.progress(min(st.session_state.total_analyzed / 50, 1.0))
     st.caption(f"Goal: Analyze 50 reps")

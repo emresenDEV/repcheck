@@ -159,11 +159,3 @@ if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8000)
 
-# **What this API does:**
-
-# **Endpoints created:**
-# 1. `GET /` - Health check (is server running?)
-# 2. `POST /api/analyze` - Upload image, analyze form
-# 3. `GET /images/uploads/{filename}` - View uploaded images
-# 4. `GET /images/processed/{filename}` - View annotated images
-# 5. `GET /api/stats` - Get statistics
