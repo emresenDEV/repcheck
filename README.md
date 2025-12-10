@@ -1,240 +1,125 @@
-# 💪 RepCheck - AI-Powered Lifting Form Analysis
+# 💪 RepCheck
 
-RepCheck uses computer vision to analyze your squat form and provide instant feedback on depth, back angle, and knee alignment. Built to help lifters prevent injuries and improve technique.
+AI-powered squat form analysis that helps you prevent injuries and improve technique.
 
-![RepCheck Demo](https://img.shields.io/badge/Status-Active-success)
-![Python](https://img.shields.io/badge/Python-3.12-blue)
+[Live Demo](https://repcheck.streamlit.app) | Built with YOLOv8 & Streamlit
 
-## 🎯 Problem Statement
+## What It Does
 
-Back injuries from improper lifting cost US companies $70 billion annually. Personal trainers are not always available. RepCheck provides real-time form analysis accessible to anyone with a camera.
+RepCheck analyzes photos of your squat form and checks three critical aspects:
 
-## ✨ Features
+- **Depth** - Are your hips below parallel?
+- **Back Angle** - Is your torso upright enough?
+- **Knee Alignment** - Are your knees tracking properly over your feet?
 
-- **📸 Photo Analysis** - Upload images or use camera (works on iPhone!)
-- **🤖 AI-Powered Detection** - YOLOv8 pose estimation for accurate form checking
-- **📊 Instant Feedback** - Get pass/fail results on:
-  - Squat depth (hips below parallel)
-  - Back angle (staying upright)
-  - Knee alignment (tracking over feet)
-- **🖼️ Visual Annotations** - See exactly where form needs improvement
-- **📱 Mobile-Friendly** - Works on any device with a browser
-- **💾 Downloadable Reports** - Save annotated images for progress tracking
+You get instant visual feedback with color-coded annotations showing exactly what needs improvement.
 
-## 🏗️ Architecture
+## Why I Built This
 
-```
-RepCheck
-├── Backend (FastAPI)
-│   ├── YOLOv8 Pose Detection
-│   ├── Form Analysis Logic
-│   └── Image Annotation
-│
-├── Frontend (Streamlit)
-│   ├── Photo Upload
-│   ├── Camera Capture
-│   └── Results Display
-│
-└── AI Model (YOLOv8n-pose)
-    └── 17 keypoint detection
-```
+Improper lifting form causes thousands of preventable injuries every year. Personal trainers aren't always accessible, and watching yourself in the mirror doesn't always catch form issues. I wanted a tool that could give objective feedback on demand, from anywhere.
 
-## 🚀 Quick Start
+This was also a learning project - I wanted to understand how computer vision works in practice and build something that could actually be useful.
 
-### Prerequisites
+## How to Use It
 
-- Python 3.12
-- Webcam (optional, for live capture)
+### Quick Start (Try the Live Demo)
 
-### Installation
+1. Go to [repcheck.streamlit.app](https://repcheck.streamlit.app)
+2. Upload a photo or use your phone's camera
+3. Make sure the photo shows your **full body from the side**
+4. Click "Analyze Form"
+5. Review feedback and download annotated image
 
-1. **Clone the repository**
+### Setup Tips
 
+For best results:
+- Position camera at hip height, 3-4 feet away
+- **Side angle is critical** (perpendicular to your body)
+- Good lighting helps
+- Use a Bluetooth remote or self-timer to capture yourself mid-squat
+
+## Running Locally
+
+If you want to run this on your own machine:
 ```bash
-git clone https://github.com/emresendev/repcheck.git
+# Clone the repo
+git clone https://github.com/emresenDEV/repcheck.git
 cd repcheck
-```
 
-2. **Create virtual environment**
-
-```bash
-python3.12 -m venv venv
+# Create virtual environment
+python3 -m venv venv
 source venv/bin/activate  # On Windows: venv\Scripts\activate
-```
 
-3. **Install dependencies**
-
-```bash
+# Install dependencies
 pip install -r requirements.txt
+
+# Run the app
+streamlit run app.py
 ```
 
-### Running RepCheck
+Open your browser to `http://localhost:8501`
 
-**Terminal 1 - Start Backend:**
+## How It Works
 
-```bash
-python backend/app.py
-```
+RepCheck uses **YOLOv8-pose** to detect 17 keypoints on your body (shoulders, hips, knees, ankles, etc.). Then it applies some basic geometry:
 
-**Terminal 2 - Start Frontend:**
+**Depth Check:**
+- Compares hip y-coordinate to knee y-coordinate
+- Hip below knee = good depth
 
-```bash
-streamlit run frontend/app.py
-```
+**Back Angle Check:**
+- Calculates angle between shoulder-hip-knee points
+- 45-90° = upright posture
+- Less than 45° = leaning too far forward
 
-**Open your browser to:** `http://localhost:8501`
+**Knee Alignment:**
+- Measures horizontal distance between knee and ankle
+- Small distance = knees tracking well over feet
+- Large distance = knees caving in or pushing too far out
 
-## 📱 How to Use
+The model runs entirely in-browser (via Streamlit Cloud), no data is stored.
 
-### Setup
+## Tech Stack
 
-1. Position camera at hip height, 3-4 feet away
-2. Ensure **side angle view** (90° to your body)
-3. Make sure full body is visible
+- **YOLOv8** - Pose estimation (detects body keypoints)
+- **OpenCV** - Image annotation (draws the colored skeleton)
+- **Streamlit** - Web interface
+- **NumPy** - Angle calculations
 
-### Capture
+Everything runs on CPU, no GPU needed. Inference takes about 100-200ms per image.
 
-1. Use Bluetooth remote or camera self-timer
-2. Get into bottom position of squat
-3. Capture photo
+## Limitations
 
-### Analyze
+- Only analyzes static images (video support coming eventually)
+- Only checks squat form (could expand to deadlifts, bench press, etc.)
+- Requires clear side-angle view
+- Can only analyze one person at a time
+- Form rules are simplified - not a replacement for a real coach
 
-1. Upload photo or use camera
-2. Click "Analyze Form"
-3. Review instant feedback
-4. Download annotated image
+## What's Next
 
-## 🧪 Technical Details
+Some ideas I'm considering:
+- Video analysis (frame-by-frame tracking)
+- Rep counting
+- Support for other exercises
+- Progress tracking over time
+- Comparison mode (upload two photos side-by-side)
 
-### Tech Stack
+## Hackathon Connection
 
-**Backend:**
+I built RepCheck as practice before participating in a hackathon focused on safety systems. The architecture is similar to what I'll be building for PPE detection in industrial settings - same pose estimation concepts, just different application.
 
-- FastAPI - Modern Python web framework
-- YOLOv8 - State-of-the-art pose estimation
-- OpenCV - Image processing and annotation
-- Pillow - Image manipulation
+## Contributing
 
-**Frontend:**
+If you find bugs or have ideas, feel free to open an issue or PR. This is a learning project, so feedback is always welcome.
 
-- Streamlit - Rapid web app development
-- Mobile-responsive design
-- Works on iOS and Android
+## License
 
-**AI Model:**
+MIT License - use it however you want.
 
-- YOLOv8n-pose (nano version)
-- 17 keypoint detection per person
-- ~90ms inference time on CPU
-- No GPU required
+---
 
-### Form Analysis Checks
+Built by [@emresenDEV](https://github.com/emresenDEV)
 
-**1. Depth Check**
+*RepCheck v1.0 - Lift safer, lift better* 💪
 
-- Measures hip position relative to knee
-- **Pass:** Hips below parallel (hip_y > knee_y)
-- **Fail:** Squat too shallow
-
-**2. Back Angle Check**
-
-- Calculates angle between shoulder-hip-knee
-- **Pass:** 45° - 90° (upright posture)
-- **Fail:** Leaning too far forward
-
-**3. Knee Alignment Check**
-
-- Measures knee position relative to ankle
-- **Pass:** Knees tracking over feet
-- **Warning:** Knees caving in or pushing too far forward
-
-## 📊 API Documentation
-
-### Endpoints
-
-**Health Check**
-
-```
-GET /
-Response: {"status": "healthy", "message": "RepCheck API is running!", "version": "1.0.0"}
-```
-
-**Analyze Form**
-
-```
-POST /api/analyze
-Body: multipart/form-data with image file
-Response: {
-  "success": true,
-  "all_pass": false,
-  "feedback": [...],
-  "annotated_image": "/images/processed/..."
-}
-```
-
-**Get Stats**
-
-```
-GET /api/stats
-Response: {
-  "total_analyzed": 10,
-  "total_processed": 10
-}
-```
-
-## 🗂️ Project Structure
-
-```
-repcheck/
-├── backend/
-│   ├── app.py              # FastAPI application
-│   ├── form_analyzer.py    # YOLOv8 analysis logic
-│   └── utils.py
-│
-├── frontend/
-│   └── app.py              # Streamlit interface
-│
-├── data/
-│   ├── uploads/            # User uploaded images
-│   └── processed/          # Annotated images
-│
-├── models/
-│   └── yolov8n-pose.pt     # Pre-trained model (auto-downloads)
-│
-├── requirements.txt
-└── README.md
-```
-
-## 🎯 Future Enhancements
-
-### Phase 2
-
-- [ ] Video analysis (frame-by-frame)
-- [ ] Multiple exercise types (deadlift, bench press)
-- [ ] Rep counting
-- [ ] Progress tracking over time
-
-### Phase 3
-
-- [ ] Real-time webcam analysis
-- [ ] Mobile app (React Native)
-
-### Phase 4
-
-- [ ] User accounts and history
-- [ ] Share results with trainers
-- [ ] Community leaderboards
-- [ ] Exercise recommendations based on form
-
-## 🙏 Acknowledgments
-
-- **Ultralytics YOLOv8** - Pose estimation model
-- **FastAPI** - Backend framework
-- **Streamlit** - Frontend framework
-
-## 📧 Contact
-
-Built by Monica Nieckula
-
-- GitHub: @emresendev
