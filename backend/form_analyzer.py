@@ -54,7 +54,7 @@ class FormAnalyzer:
         feedback = []
         
         # Check 1: Depth (hip should be below knee for proper squat)
-        depth_good = hip[1] > knee[1]  # y-axis: higher value = lower in image
+        depth_good = bool(hip[1] > knee[1])  # Convert to Python bool
         if depth_good:
             feedback.append({
                 'check': 'Depth',
@@ -70,7 +70,7 @@ class FormAnalyzer:
         
         # Check 2: Back angle (torso shouldn't be too horizontal)
         back_angle = self._calculate_angle(shoulder, hip, knee)
-        back_good = 45 < back_angle < 90
+        back_good = bool(45 < back_angle < 90)  # Convert to Python bool
         if back_good:
             feedback.append({
                 'check': 'Back Angle',
@@ -85,8 +85,8 @@ class FormAnalyzer:
             })
         
         # Check 3: Knee alignment (knees over ankles)
-        knee_distance = abs(knee[0] - ankle[0])
-        knee_good = knee_distance < 50  # pixels
+        knee_distance = float(abs(knee[0] - ankle[0]))  # Convert to Python float
+        knee_good = bool(knee_distance < 50)  # Convert to Python bool
         if knee_good:
             feedback.append({
                 'check': 'Knee Alignment',
@@ -101,14 +101,14 @@ class FormAnalyzer:
             })
         
         # Overall assessment
-        all_pass = depth_good and back_good and knee_good
+        all_pass = bool(depth_good and back_good and knee_good)  # Convert to Python bool
         
         return {
             'success': True,
             'all_pass': all_pass,
             'feedback': feedback,
-            'keypoints': keypoints.tolist(),  # For visualization
-            'num_people': len(results[0].keypoints)
+            'keypoints': keypoints.tolist(),  # Already converts to Python list
+            'num_people': int(len(results[0].keypoints))  # Convert to Python int
         }
     
     def _calculate_angle(self, point1, point2, point3):
@@ -120,7 +120,7 @@ class FormAnalyzer:
         cos_angle = np.dot(vector1, vector2) / (np.linalg.norm(vector1) * np.linalg.norm(vector2))
         angle = np.arccos(np.clip(cos_angle, -1.0, 1.0))
         
-        return np.degrees(angle)
+        return float(np.degrees(angle))  # Convert to Python float
     
     def annotate_image(self, image_path, analysis_result):
         """
@@ -191,13 +191,3 @@ if __name__ == "__main__":
     print("FormAnalyzer module loaded successfully!")
     analyzer = FormAnalyzer()
     print("Ready to analyze squat form!")
-
-# **What this code does:**
-# 1. Loads YOLOv8 pose model
-# 2. Detects 17 keypoints on a person's body
-# 3. Analyzes 3 aspects of squat form:
-#    - **Depth**: Are hips below knees?
-#    - **Back angle**: Is torso upright enough?
-#    - **Knee alignment**: Are knees tracking over feet?
-# 4. Returns pass/fail for each check
-# 5. Can annotate images with visual feedback

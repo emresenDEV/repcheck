@@ -5,6 +5,8 @@ from form_analyzer import FormAnalyzer
 import shutil
 from pathlib import Path
 import uuid
+from PIL import Image
+import io
 
 # Initialize FastAPI app
 app = FastAPI(title="RepCheck API", version="1.0.0")
@@ -42,29 +44,42 @@ async def analyze_form(file: UploadFile = File(...)):
     Analyze squat form from uploaded image
     
     Args:
-        file: Uploaded image file (JPG, PNG, JPEG)
+        file: Uploaded image file (JPG, PNG, JPEG, WEBP)
         
     Returns:
         JSON with analysis results and annotated image path
     """
-    # Validate file type
-    allowed_types = ['image/jpeg', 'image/jpg', 'image/png']
-    if file.content_type not in allowed_types:
-        raise HTTPException(
-            status_code=400,
-            detail=f"Invalid file type. Allowed: JPG, JPEG, PNG. Got: {file.content_type}"
-        )
-    
     try:
+        # Read file content
+        content = await file.read()
+        
+        # Try to open as image (validates it's actually an image)
+        try:
+            image = Image.open(io.BytesIO(content))
+            image.verify()  # Verify it's a valid image
+            
+            # Re-open for processing (verify() closes the file)
+            image = Image.open(io.BytesIO(content))
+        except Exception as e:
+            raise HTTPException(
+                status_code=400,
+                detail=f"Invalid image file. Please upload JPG, PNG, or JPEG. Error: {str(e)}"
+            )
+        
         # Generate unique filename
         file_id = str(uuid.uuid4())
-        file_extension = file.filename.split('.')[-1]
-        original_filename = f"{file_id}.{file_extension}"
+        
+        # Determine extension from image format
+        if image.format:
+            extension = image.format.lower()
+        else:
+            extension = 'jpg'  # Default
+        
+        original_filename = f"{file_id}.{extension}"
         original_path = UPLOAD_DIR / original_filename
         
         # Save uploaded file
-        with original_path.open("wb") as buffer:
-            shutil.copyfileobj(file.file, buffer)
+        image.save(str(original_path))
         
         print(f"Analyzing image: {original_filename}")
         
@@ -82,7 +97,7 @@ async def analyze_form(file: UploadFile = File(...)):
             )
         
         # Create annotated image
-        annotated_filename = f"{file_id}_annotated.{file_extension}"
+        annotated_filename = f"{file_id}_annotated.{extension}"
         annotated_path = PROCESSED_DIR / annotated_filename
         
         annotated_image = analyzer.annotate_image(str(original_path), analysis)
@@ -101,8 +116,12 @@ async def analyze_form(file: UploadFile = File(...)):
             "annotated_image": f"/images/processed/{annotated_filename}"
         }
         
+    except HTTPException:
+        raise
     except Exception as e:
         print(f"Error during analysis: {str(e)}")
+        import traceback
+        traceback.print_exc()
         raise HTTPException(
             status_code=500,
             detail=f"Analysis failed: {str(e)}"
