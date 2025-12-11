@@ -111,20 +111,6 @@ Some ideas I'm considering:
 - Progress tracking over time
 - Comparison mode (upload two photos side-by-side)
 
-## Hackathon Connection
-
-I built RepCheck as practice before participating in a hackathon focused on safety systems. The architecture is similar to what I'll be building for PPE detection in industrial settings - same pose estimation concepts, just different application.
-
-## Contributing
-
-If you find bugs or have ideas, feel free to open an issue or PR. This is a learning project, so feedback is always welcome.
-
-## License
-
-MIT License - use it however you want.
-
----
-
 Built by [@emresenDEV](https://github.com/emresenDEV)
 
 *RepCheck v1.0 - Lift safer, lift better* 💪
