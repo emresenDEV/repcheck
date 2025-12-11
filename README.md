@@ -24,7 +24,7 @@ This was also a learning project - I wanted to understand how computer vision wo
 
 ### Quick Start (Try the Live Demo)
 
-1. Go to [repcheck.streamlit.app](https://repcheck.streamlit.app)
+1. Go to [repcheck.streamlit.app](https://repcheck.streamlit.app) (note: the app will sleep after 7 days of inactivity)
 2. Upload a photo or use your phone's camera
 3. Make sure the photo shows your **full body from the side**
 4. Click "Analyze Form"
@@ -33,6 +33,7 @@ This was also a learning project - I wanted to understand how computer vision wo
 ### Setup Tips
 
 For best results:
+
 - Position camera at hip height, 3-4 feet away
 - **Side angle is critical** (perpendicular to your body)
 - Good lighting helps
@@ -41,6 +42,7 @@ For best results:
 ## Running Locally
 
 If you want to run this on your own machine:
+
 ```bash
 # Clone the repo
 git clone https://github.com/emresenDEV/repcheck.git
@@ -64,15 +66,18 @@ Open your browser to `http://localhost:8501`
 RepCheck uses **YOLOv8-pose** to detect 17 keypoints on your body (shoulders, hips, knees, ankles, etc.). Then it applies some basic geometry:
 
 **Depth Check:**
+
 - Compares hip y-coordinate to knee y-coordinate
 - Hip below knee = good depth
 
 **Back Angle Check:**
+
 - Calculates angle between shoulder-hip-knee points
 - 45-90° = upright posture
 - Less than 45° = leaning too far forward
 
 **Knee Alignment:**
+
 - Measures horizontal distance between knee and ankle
 - Small distance = knees tracking well over feet
 - Large distance = knees caving in or pushing too far out
@@ -99,6 +104,7 @@ Everything runs on CPU, no GPU needed. Inference takes about 100-200ms per image
 ## What's Next
 
 Some ideas I'm considering:
+
 - Video analysis (frame-by-frame tracking)
 - Rep counting
 - Support for other exercises
@@ -122,4 +128,3 @@ MIT License - use it however you want.
 Built by [@emresenDEV](https://github.com/emresenDEV)
 
 *RepCheck v1.0 - Lift safer, lift better* 💪
-
